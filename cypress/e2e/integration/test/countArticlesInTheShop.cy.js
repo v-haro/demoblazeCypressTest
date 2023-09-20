@@ -1,13 +1,11 @@
 import HomePage from '../pages/HomePage';
 import LoginPage from '../pages/LoginPage';
-import ProductPage from '../pages/ProductPage';
-import CartPage from '../pages/CartPage';
+import ArticleCounter from '../functions/articleCounter';
 
 describe('E-commerce Workflow', () => {
     const home = new HomePage();
     const login = new LoginPage();
-    const product = new ProductPage();
-    const cart = new CartPage();
+    const articleCounter = new ArticleCounter();
 
     before(() => {
         cy.fixture('testData').as('data');
@@ -19,22 +17,8 @@ describe('E-commerce Workflow', () => {
         home.goToLogin();
         login.login(this.data.username, this.data.password);
 
-        let articles = 0;
-        // Function to count articles in a category
-        const countArticlesInCategory = (categoryName) => {
-            home.goToCategory(categoryName);
-            return cy.get('div#tbodyid div.card-block').its('length');
-        };
-
-        // Chain the counting for each category
-        countArticlesInCategory('Phones').then((count) => {
-            articles += count;
-            return countArticlesInCategory('Laptops');
-        }).then((count) => {
-            articles += count;
-            return countArticlesInCategory('Monitors');
-        }).then((count) => {
-            articles += count;
+        // Get the total count of articles
+        articleCounter.getTotalArticles().then((articles) => {
             // Log the final count
             cy.log('Number of articles counted:', articles);
 
